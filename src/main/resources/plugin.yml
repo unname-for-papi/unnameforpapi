@@ -1,0 +1,11 @@
+name: unnamepapi
+version: '1.0'
+main: org.igorgames.unnamepapi.Unnamepapi
+api-version: '1.21'
+authors: [ igorgames ]
+description: for papi to help making worlds like servers
+depend: [PlaceholderAPI]
+commands:
+  unnp:
+    permission-message: you need permission unnp.admin to use!
+    permission: unnp.admin
