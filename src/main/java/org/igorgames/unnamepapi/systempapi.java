@@ -28,10 +28,6 @@ public class systempapi extends PlaceholderExpansion {
     }
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
-        // %unnamepapi____worldonlineadding____world____world_nether____world_the_end%
-        // %unnamepapi____itemcount____grass_block%
-        // %unnamepapi____diedsworld____world____world_nether____world_the_end%
-        // %unnamepapi____killsworld____world____world_nether____world_the_end%
         params = params.replaceAll("^_+", "");
         String[] parts = params.split("____");
 
@@ -84,6 +80,72 @@ public class systempapi extends PlaceholderExpansion {
             int count = 0;
             for (int i = 1; i < parts.length; i++) {
                 count += Unnamepapi.playersData.get(player.getUniqueId()).config.getInt("worlds." + parts[i] + ".kill",0);
+            }
+            return String.valueOf(count);
+        } else if (parts[0].equalsIgnoreCase("spenttimeworld_S")) {
+            if (player == null) return "0";
+            int count = 0;
+            for (int i = 1; i < parts.length; i++) {
+                count += Unnamepapi.playersData.get(player.getUniqueId()).config.getInt("worlds." + parts[i] + ".time",0);
+            }
+            return String.valueOf(count);
+        } else if (parts[0].equalsIgnoreCase("spenttimeworld_M")) {
+            if (player == null) return "0";
+            int count = 0;
+            for (int i = 1; i < parts.length; i++) {
+                count += Math.floor(Unnamepapi.playersData.get(player.getUniqueId()).config.getInt("worlds." + parts[i] + ".time",0)/60);
+            }
+            return String.valueOf(count);
+        } else if (parts[0].equalsIgnoreCase("spenttimeworld_H")) {
+            if (player == null) return "0";
+            int count = 0;
+            for (int i = 1; i < parts.length; i++) {
+                count += Math.floor(Unnamepapi.playersData.get(player.getUniqueId()).config.getInt("worlds." + parts[i] + ".time",0)/3600);
+            }
+            return String.valueOf(count);
+        } else if (parts[0].equalsIgnoreCase("spenttimeworld_D")) {
+            if (player == null) return "0";
+            int count = 0;
+            for (int i = 1; i < parts.length; i++) {
+                count += Math.floor(Unnamepapi.playersData.get(player.getUniqueId()).config.getInt("worlds." + parts[i] + ".time",0)/86400);
+            }
+            return String.valueOf(count);
+        } else if (parts[0].equalsIgnoreCase("spenttimeworldtemplate")) {
+            if (player == null) return "0";
+            int totalSeconds = 0;
+
+
+            for (int i = 2; i < parts.length; i++) {
+                totalSeconds += Unnamepapi.playersData
+                        .get(player.getUniqueId())
+                        .config.getInt("worlds." + parts[i] + ".time", 0);
+            }
+
+
+            int days = totalSeconds / 86400;
+            int hours = (totalSeconds % 86400) / 3600;
+            int minutes = (totalSeconds % 3600) / 60;
+            int seconds = totalSeconds % 60;
+
+
+            String formattedTimeS = String.format("%02d", seconds);
+            String formattedTimeM = String.format("%02d", minutes);
+            String formattedTimeH = String.format("%02d", hours);
+            String formattedTimeD = String.format("%02d", days);
+
+
+            String output = Unnamepapi.timeyml.getString("template." + parts[1], "the template " + parts[1] + " does not exist");
+
+            output = output.replace("%{S}%", formattedTimeS);
+            output = output.replace("%{M}%", formattedTimeM);
+            output = output.replace("%{H}%", formattedTimeH);
+            output = output.replace("%{D}%", formattedTimeD);
+
+            return output;
+        } else if (parts[0].equalsIgnoreCase("serveronline")) {
+            int count = 0;
+            for (Player player1 : Bukkit.getOnlinePlayers()) {
+                count += 1;
             }
             return String.valueOf(count);
         }
