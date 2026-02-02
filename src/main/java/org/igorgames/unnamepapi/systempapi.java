@@ -32,7 +32,6 @@ public class systempapi extends PlaceholderExpansion {
         // %unnamepapi____itemcount____grass_block%
         // %unnamepapi____diedsworld____world____world_nether____world_the_end%
         // %unnamepapi____killsworld____world____world_nether____world_the_end%
-        if (player == null) return "";
         params = params.replaceAll("^_+", "");
         String[] parts = params.split("____");
 
@@ -57,6 +56,7 @@ public class systempapi extends PlaceholderExpansion {
             }
             return String.valueOf(count);
         } else if (parts[0].equalsIgnoreCase("itemcount")) {
+            if (player == null) return "0";
             List<Material> items = new ArrayList<>();
             for (int i = 1; i < parts.length; i++) {
                 Material item = Material.getMaterial(parts[i].toUpperCase());
@@ -73,12 +73,14 @@ public class systempapi extends PlaceholderExpansion {
             }
             return String.valueOf(count);
         } else if (parts[0].equalsIgnoreCase("diedsworld")) {
+            if (player == null) return "0";
             int count = 0;
             for (int i = 1; i < parts.length; i++) {
                 count += Unnamepapi.playersData.get(player.getUniqueId()).config.getInt("worlds." + parts[i] + ".died",0);
             }
             return String.valueOf(count);
         } else if (parts[0].equalsIgnoreCase("killsworld")) {
+            if (player == null) return "0";
             int count = 0;
             for (int i = 1; i < parts.length; i++) {
                 count += Unnamepapi.playersData.get(player.getUniqueId()).config.getInt("worlds." + parts[i] + ".kill",0);
