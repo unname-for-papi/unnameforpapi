@@ -21,10 +21,27 @@ import java.util.*;
 
 public final class Unnamepapi extends JavaPlugin implements Listener {
     public static Map<UUID,PlayerData> playersData = new HashMap<>();
+    public static FileConfiguration timeyml;
+    public static File timefile;
     private void run() {
         File dataFolder = getDataFolder();
         if (!dataFolder.exists()) {
             dataFolder.mkdirs();
+        }
+        timefile = new File(getDataFolder(), "time.yml");
+        try {
+            timefile.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        timeyml = YamlConfiguration.loadConfiguration(timefile);
+        if (!timeyml.contains("template.default")) {
+            timeyml.set("template.default","%{D}%:%{H}%:%{M}%:%{S}%");
+            try {
+                timeyml.save(timefile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         File players = new File(getDataFolder(), "PlayersData");
         if (!players.exists()) {
@@ -67,12 +84,30 @@ public final class Unnamepapi extends JavaPlugin implements Listener {
             }
         }
     }
+    public void everysec() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            FileConfiguration Playeryml = playersData.get(player.getUniqueId()).config;
+            File Playerfile = playersData.get(player.getUniqueId()).file;
+            if (!Playeryml.contains("worlds." + player.getWorld().getName() + ".time")) {
+                Playeryml.set("worlds." + player.getWorld().getName() + ".time", 0);
+            }
+            Playeryml.set("worlds." + player.getWorld().getName() + ".time", Playeryml.getInt("worlds." + player.getWorld().getName() + ".time",0)+1);
+            try {
+                Playeryml.save(Playerfile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
     @Override
     public void onEnable() {
         run();
         new systempapi().register();
         getCommand("unnp").setExecutor(this::onCommand);
         getCommand("unnp").setTabCompleter(this::onTabComplete);
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            everysec();
+        }, 0L, 20L);
     }
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
